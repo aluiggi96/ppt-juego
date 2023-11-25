@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Piedra, Papel, Tijera</title>
+  <style>
+    /* Estilos comunes a toda la página */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    button {
+      padding: 15px 30px; /* Tamaño de botones */
+      margin: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+    
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      opacity: 0.5; /* Botones opacos cuando están deshabilitados */
+      cursor: not-allowed; /* Cursor no permitido cuando los botones están deshabilitados */
+    }
+
+    #countdown {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+
+    #skipButton {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      button {
+        padding: 10px 20px; /* Ajuste para pantallas más pequeñas */
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Piedra, Papel, Tijera</h1>
+  <p>Elije una opción:</p>
+  <button id="rockBtn" onclick="playGame(1)">🗿</button>
+  <button id="paperBtn" onclick="playGame(2)">📄</button>
+  <button id="scissorsBtn" onclick="playGame(3)">✂️</button>
+  <p id="result"></p>
+  <p id="countdown"></p>
+  <button id="skipButton" onclick="skipCountdown()">Omitir Tiempo</button>
+
+  <script>
+    let countdownValue = 5;
+    let countdownTimeout;
+
+    function playGame(playerChoice) {
+      const choices = ['🗿', '📄', '✂️'];
+      const computerChoice = Math.floor(Math.random() * 3) + 1;
+      
+      const playerChoiceText = choices[playerChoice - 1];
+      const computerChoiceText = choices[computerChoice - 1];
+
+      let resultMessage = '';
+
+      if (playerChoice === computerChoice) {
+        resultMessage = '¡Es un empate!';
+      } else if (
+        (playerChoice === 1 && computerChoice === 3) ||
+        (playerChoice === 2 && computerChoice === 1) ||
+        (playerChoice === 3 && computerChoice === 2)
+      ) {
+        resultMessage = '¡Ganaste!';
+      } else {
+        resultMessage = '¡Perdiste! Inténtalo de nuevo.';
+      }
+
+      const resultElement = document.getElementById('result');
+      resultElement.innerHTML = `Elegiste ${playerChoiceText}. La computadora eligió ${computerChoiceText}. ${resultMessage}`;
+
+      disableButtons(); // Deshabilita los botones durante la cuenta regresiva
+      
+      startCountdown();
+    }
+
+    function startCountdown() {
+      const countdownElement = document.getElementById('countdown');
+      countdownElement.innerHTML = `Siguiente partida en ${countdownValue}...`;
+
+      countdownTimeout = setInterval(() => {
+        countdownValue--;
+
+        if (countdownValue <= 0) {
+          clearInterval(countdownTimeout);
+          countdownElement.innerHTML = '';
+          countdownValue = 5; // Reinicia el contador para la siguiente partida
+          document.getElementById('skipButton').style.display = 'none'; // Oculta el botón de omitir tiempo
+          enableButtons(); // Habilita los botones al llegar a cero completamente
+          clearResult(); // Limpia el mensaje del resultado al llegar a cero completamente
+        } else {
+          countdownElement.innerHTML = `Siguiente partida en ${countdownValue}...`;
+          document.getElementById('skipButton').style.display = 'inline-block'; // Muestra el botón de omitir tiempo
+        }
+      }, 1000); // Actualiza el contador cada segundo
+    }
+
+    function skipCountdown() {
+      clearInterval(countdownTimeout); // Cancela el intervalo del contador
+      countdownValue = 5; // Establece el valor del contador a cero
+      const countdownElement = document.getElementById('countdown');
+      countdownElement.innerHTML = ''; // Limpia el texto del contador
+      document.getElementById('skipButton').style.display = 'none'; // Oculta el botón de omitir tiempo
+      enableButtons(); // Habilita los botones al omitir el tiempo
+      clearResult(); // Limpia el mensaje del resultado al omitir el tiempo
+    }
+
+    function clearResult() {
+      document.getElementById('result').innerHTML = ''; // Limpia el mensaje del resultado
+    }
+
+    function disableButtons() {
+      document.getElementById('rockBtn').disabled = true; // Deshabilita el botón de piedra
+      document.getElementById('paperBtn').disabled = true; // Deshabilita el botón de papel
+      document.getElementById('scissorsBtn').disabled = true; // Deshabilita el botón de tijera
+    }
+
+    function enableButtons() {
+      document.getElementById('rockBtn').disabled = false; // Habilita el botón de piedra
+      document.getElementById('paperBtn').disabled = false; // Habilita el botón de papel
+      document.getElementById('scissorsBtn').disabled = false; // Habilita el botón de tijera
+    }
+  </script>
+</body>
+</html>
